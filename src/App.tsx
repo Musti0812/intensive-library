@@ -1,8 +1,4 @@
-import {
-  ChartColumnStacked,
-  SettingsIcon,
-  HomeIcon,
-} from "lucide-react";
+import { ChartColumnStacked, SettingsIcon, HomeIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -18,22 +14,13 @@ import {
   SidebarProvider,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import IntensiveLibrary from "../public/IntensiveLibrary.png";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const libraryItems = [
-  {
-    title: "Dashboard",
-    icon: HomeIcon,
-    active: true,
-  },
-  {
-    title: "Categories",
-    icon: ChartColumnStacked,
-  },
-];
-
 function App() {
+  const location = useLocation();
+
   return (
     <TooltipProvider>
       <SidebarProvider>
@@ -65,17 +52,23 @@ function App() {
               <SidebarGroupLabel>Menu</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {libraryItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        isActive={item.active}
-                        tooltip={item.title}
-                      >
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  <SidebarMenuButton
+                    isActive={location.pathname === "/"}
+                    tooltip="Dashboard"
+                    render={<NavLink to="/" />}
+                  >
+                    <HomeIcon />
+                    <span>Dashboard</span>
+                  </SidebarMenuButton>
+
+                  <SidebarMenuButton
+                    isActive={location.pathname === "/categories"}
+                    tooltip="Categories"
+                    render={<NavLink to="/categories" />}
+                  >
+                    <ChartColumnStacked />
+                    <span>Categories</span>
+                  </SidebarMenuButton>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -106,24 +99,7 @@ function App() {
           </header>
 
           <main className="flex flex-1 flex-col gap-6 p-6">
-            <section className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg border bg-card p-4 text-card-foreground">
-                <p className="text-sm text-muted-foreground">Total titles</p>
-                <p className="mt-2 text-3xl font-semibold">1,248</p>
-              </div>
-
-              <div className="rounded-lg border bg-card p-4 text-card-foreground">
-                <p className="text-sm text-muted-foreground">Active members</p>
-                <p className="mt-2 text-3xl font-semibold">342</p>
-              </div>
-
-              <div className="rounded-lg border bg-card p-4 text-card-foreground">
-                <p className="text-sm text-muted-foreground">Due this week</p>
-                <p className="mt-2 text-3xl font-semibold">27</p>
-              </div>
-            </section>
-
-            <section className="rounded-lg border bg-card p-10 text-card-foreground"></section>
+            <Outlet />
           </main>
         </SidebarInset>
       </SidebarProvider>
