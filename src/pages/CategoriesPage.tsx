@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -35,12 +35,19 @@ const categories = [
 function CategoriesPage() {
   return (
     <section className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold">Categories</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage library categories and see how many books each one contains.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Categories</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage library categories and see how many books each one contains.
+          </p>
+        </div>
       </div>
+
+      <Button>
+        <PlusIcon />
+        <span>Create Category</span>
+      </Button>
 
       <div className="max-w-2xl rounded-lg border bg-card text-card-foreground">
         <Table>
@@ -55,17 +62,16 @@ function CategoriesPage() {
             {categories.map((category) => (
               <TableRow key={category.id}>
                 <TableCell className="font-medium">{category.name}</TableCell>
-                <TableCell className="text-center">{category.bookCount}</TableCell>
+                <TableCell className="text-center">
+                  {category.bookCount}
+                </TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" size="sm">
                       <PencilIcon />
                       <span>Edit</span>
                     </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                    >
+                    <Button variant="destructive" size="sm">
                       <TrashIcon />
                       <span>Delete</span>
                     </Button>
