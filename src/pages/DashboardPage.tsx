@@ -1,22 +1,19 @@
+import CreateBookDialog from "@/components/books/CreateBookDialog";
+
 function DashboardPage() {
   return (
     <>
-      <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border bg-card p-4 text-card-foreground">
-          <p className="text-sm text-muted-foreground">Total titles</p>
-          <p className="mt-2 text-3xl font-semibold">1,248</p>
-        </div>
-
-        <div className="rounded-lg border bg-card p-4 text-card-foreground">
-          <p className="text-sm text-muted-foreground">Active members</p>
-          <p className="mt-2 text-3xl font-semibold">342</p>
-        </div>
-
-        <div className="rounded-lg border bg-card p-4 text-card-foreground">
-          <p className="text-sm text-muted-foreground">Due this week</p>
-          <p className="mt-2 text-3xl font-semibold">27</p>
+      <section className="space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Dashboard</h1>
+          </div>
         </div>
       </section>
+
+      <div>
+        <CreateBookDialog />
+      </div>
 
       <section className="rounded-lg border bg-card p-10 text-card-foreground" />
     </>
