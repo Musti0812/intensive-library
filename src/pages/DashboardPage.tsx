@@ -1,4 +1,4 @@
-import CreateBookDialog from "@/components/books/CreateBookDialog";
+import CreateBookDialog from "@/components/books/CreateArticleDialog";
 
 function DashboardPage() {
   return (

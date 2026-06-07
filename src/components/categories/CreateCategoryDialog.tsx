@@ -1,5 +1,11 @@
-import { PlusIcon } from "lucide-react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { saveCategory } from "@/services/categoryService";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PlusIcon } from "lucide-react";
+import { Field } from "../ui/field";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +15,34 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Field } from "../ui/field";
+
+const categorySchema = z.object({
+  name: z.string().min(1, { message: "Name is required." }),
+});
+
+type FormData = z.infer<typeof categorySchema>;
+
+const DEFAULT_FORM_DATA: FormData = {
+  name: "",
+};
 
 function CreateCategoryDialog() {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: zodResolver(categorySchema),
+    mode: "onChange",
+    defaultValues: DEFAULT_FORM_DATA,
+  });
+
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
+    await saveCategory(formData);
+    reset(DEFAULT_FORM_DATA);
+  };
+
   return (
     <Dialog>
       <DialogTrigger render={<Button />}>
@@ -21,7 +51,7 @@ function CreateCategoryDialog() {
       </DialogTrigger>
 
       <DialogContent>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Create category</DialogTitle>
             <DialogDescription>
@@ -32,11 +62,20 @@ function CreateCategoryDialog() {
           <div>
             <Field>
               <label className="mt-3">Name</label>
-              <Input id="categoryName" placeholder="Category name" />
+              <Input
+                id="categoryName"
+                placeholder="Category name"
+                {...register("name")}
+              />
+              {errors.name && (
+                <p className="text-sm text-destructive">
+                  {errors.name.message}
+                </p>
+              )}
             </Field>
           </div>
           <DialogFooter showCloseButton={true} className="mt-4">
-            <Button>Create</Button>
+            <Button disabled={!isValid}>Create</Button>
           </DialogFooter>
         </form>
       </DialogContent>
