@@ -35,10 +35,12 @@ const libraryItemSchema = z.object({
   author: z.string().optional(),
   nbrPages: z
     .number({ error: "Pages must be a number." })
-    .min(0, { message: "Use 0 if pages do not apply." }),
+    .min(0, { message: "Use 0 if pages do not apply." })
+    .optional(),
   runTimeMinutes: z
     .number({ error: "Runtime must be a number." })
-    .min(0, { message: "Use 0 if runtime does not apply." }),
+    .min(0, { message: "Use 0 if runtime does not apply." })
+    .optional(),
 });
 
 type FormData = z.infer<typeof libraryItemSchema>;
@@ -67,7 +69,11 @@ function mapToLibraryItem(formData: FormData): LibraryItemFormData {
   };
 }
 
-function CreateArticleDialog() {
+interface Props {
+  onSaved?: () => void;
+}
+
+function CreateArticleDialog({ onSaved }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [libraryItemTypes, setLibraryItemTypes] = useState<LibraryItemType[]>(
     [],
@@ -101,8 +107,13 @@ function CreateArticleDialog() {
   }, []);
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
-    await saveLibraryItem(mapToLibraryItem(formData));
-    reset(DEFAULT_FORM_DATA);
+    try {
+      await saveLibraryItem(mapToLibraryItem(formData));
+      reset(DEFAULT_FORM_DATA);
+      onSaved?.();
+    } catch (error) {
+      console.log("Could not create the library item.", error);
+    }
   };
 
   return (
@@ -146,7 +157,11 @@ function CreateArticleDialog() {
 
               <Field>
                 <label>Title</label>
-                <Input id="title" placeholder="Title" {...register("title")} />
+                <Input
+                  id="title"
+                  placeholder="Title"
+                  {...register("title")}
+                />
                 {errors.title && (
                   <p className="text-sm text-destructive">
                     {errors.title.message}
@@ -212,7 +227,7 @@ function CreateArticleDialog() {
               </Field>
 
               <Field>
-                <label htmlFor="runTimeMinutes">Runtime</label>
+                <label htmlFor="runTimeMinutes">Runtime in Minutes</label>
                 <Input
                   id="runTimeMinutes"
                   type="number"
@@ -242,7 +257,9 @@ function CreateArticleDialog() {
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button disabled={!isValid}>Create</Button>
+            <Button type="submit" disabled={!isValid}>
+              Create
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -52,6 +52,7 @@ type FormData = z.infer<typeof libraryItemSchema>;
 
 interface Props {
   libraryItem: LibraryItem;
+  onSaved?: () => void;
 }
 
 function mapToFormData(libraryItem: LibraryItem): FormData {
@@ -68,7 +69,7 @@ function mapToFormData(libraryItem: LibraryItem): FormData {
   };
 }
 
-function EditArticleDialog({ libraryItem }: Props) {
+function EditArticleDialog({ libraryItem, onSaved }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [libraryItemTypes, setLibraryItemTypes] = useState<LibraryItemType[]>(
     [],
@@ -102,8 +103,13 @@ function EditArticleDialog({ libraryItem }: Props) {
   }, []);
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
-    await saveLibraryItem(formData);
-    reset(mapToFormData(libraryItem));
+    try {
+      await saveLibraryItem(formData);
+      reset(formData);
+      onSaved?.();
+    } catch (error) {
+      console.log("Could not edit the library item.", error);
+    }
   };
 
   return (
@@ -243,7 +249,9 @@ function EditArticleDialog({ libraryItem }: Props) {
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button disabled={!isValid}>Edit</Button>
+            <Button type="submit" disabled={!isValid}>
+              Edit
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
