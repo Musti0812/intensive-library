@@ -26,7 +26,11 @@ const DEFAULT_FORM_DATA: FormData = {
   name: "",
 };
 
-function CreateCategoryDialog() {
+interface Props {
+  onSaved?: () => void;
+}
+
+function CreateCategoryDialog({ onSaved }: Props) {
   const {
     register,
     handleSubmit,
@@ -39,8 +43,13 @@ function CreateCategoryDialog() {
   });
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
-    await saveCategory(formData);
-    reset(DEFAULT_FORM_DATA);
+    try {
+      await saveCategory(formData);
+      reset(DEFAULT_FORM_DATA);
+      onSaved?.();
+    } catch (error) {
+      console.log("Could not create the category.", error);
+    }
   };
 
   return (
@@ -75,7 +84,9 @@ function CreateCategoryDialog() {
             </Field>
           </div>
           <DialogFooter showCloseButton={true} className="mt-4">
-            <Button disabled={!isValid}>Create</Button>
+            <Button type="submit" disabled={!isValid}>
+              Create
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

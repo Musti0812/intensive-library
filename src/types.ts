@@ -1,6 +1,7 @@
 export type Category = {
   id: string;
   name: string;
+  itemsCount: number;
 };
 
 export type CategoryFormData = {
@@ -43,4 +44,9 @@ export type LibraryItemFormData = {
 
 export type CheckoutFormData = {
   borrower: string;
+};
+
+export type SortColumn = {
+  path: string;
+  order: "asc" | "desc";
 };

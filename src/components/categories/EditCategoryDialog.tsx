@@ -26,6 +26,7 @@ type FormData = z.infer<typeof categorySchema>;
 
 interface Props {
   category: Category;
+  onSaved?: () => void;
 }
 
 function mapToFormData(category: Category): FormData {
@@ -35,7 +36,7 @@ function mapToFormData(category: Category): FormData {
   };
 }
 
-function EditCategoryDialog({ category }: Props) {
+function EditCategoryDialog({ category, onSaved }: Props) {
   const {
     register,
     handleSubmit,
@@ -48,8 +49,13 @@ function EditCategoryDialog({ category }: Props) {
   });
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
-    await saveCategory(formData);
-    reset(mapToFormData(category));
+    try {
+      await saveCategory(formData);
+      reset(formData);
+      onSaved?.();
+    } catch (error) {
+      console.log("Could not edit the category.", error);
+    }
   };
 
   return (
@@ -85,7 +91,9 @@ function EditCategoryDialog({ category }: Props) {
             </Field>
           </div>
           <DialogFooter showCloseButton={true} className="mt-4">
-            <Button disabled={!isValid}>Edit</Button>
+            <Button type="submit" disabled={!isValid}>
+              Edit
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
