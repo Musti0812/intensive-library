@@ -1,7 +1,7 @@
 import type { Category, CategoryFormData } from "@/types";
 import axios from "axios";
 
-const API_BASEURL = "http://localhost:2277/api/categories";
+const API_BASEURL = "https://intensive-library-backend-gffl.onrender.com/api/categories";
 
 function categoryUrl(id?: string) {
   if (id) return `${API_BASEURL}/${id}`;

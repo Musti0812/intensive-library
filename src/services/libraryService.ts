@@ -6,7 +6,7 @@ import type {
 } from "@/types";
 import axios from "axios";
 
-const API_BASEURL = "http://localhost:2277/api/libraryitems";
+const API_BASEURL = "https://intensive-library-backend-gffl.onrender.com/api/libraryitems";
 
 function libraryItemUrl(id?: string) {
   if (id) return `${API_BASEURL}/${id}`;
