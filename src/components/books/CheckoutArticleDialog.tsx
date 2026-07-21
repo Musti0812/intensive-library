@@ -1,5 +1,5 @@
-import { checkoutLibraryItem } from "@/services/libraryService";
 import { type SubmitHandler, useForm } from "react-hook-form";
+import { useCheckoutLibraryItem } from "@/hooks/useLibraryItems";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +27,11 @@ const DEFAULT_FORM_DATA: FormData = {
 
 interface Props {
   libraryItemId: string;
-  onSaved?: () => void;
 }
 
-function CheckoutArticleDialog({ libraryItemId, onSaved }: Props) {
+function CheckoutArticleDialog({ libraryItemId }: Props) {
+  const checkoutLibraryItem = useCheckoutLibraryItem();
+
   const {
     register,
     handleSubmit,
@@ -44,9 +45,11 @@ function CheckoutArticleDialog({ libraryItemId, onSaved }: Props) {
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      await checkoutLibraryItem(libraryItemId, formData);
+      await checkoutLibraryItem.mutateAsync({
+        id: libraryItemId,
+        checkout: formData,
+      });
       reset(DEFAULT_FORM_DATA);
-      onSaved?.();
     } catch (error) {
       console.log("Could not checkout the library item.", error);
     }
@@ -84,7 +87,10 @@ function CheckoutArticleDialog({ libraryItemId, onSaved }: Props) {
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button type="submit" disabled={!isValid}>
+            <Button
+              type="submit"
+              disabled={!isValid || checkoutLibraryItem.isPending}
+            >
               Checkout
             </Button>
           </DialogFooter>

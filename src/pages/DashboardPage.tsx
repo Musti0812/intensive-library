@@ -1,16 +1,15 @@
 import CheckoutArticleDialog from "@/components/books/CheckoutArticleDialog";
 import CreateArticleDialog from "@/components/books/CreateArticleDialog";
 import EditArticleDialog from "@/components/books/EditArticleDialog";
-import useLibraryItems from "@/hooks/useLibraryItems";
+import useLibraryItems, {
+  useCheckinLibraryItem,
+  useDeleteLibraryItem,
+} from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
 import type { SortColumn } from "@/types";
 import { TrashIcon } from "lucide-react";
 import { useState } from "react";
 import _ from "lodash";
-import {
-  checkinLibraryItem,
-  deleteLibraryItem,
-} from "@/services/libraryService";
 import {
   Table,
   TableBody,
@@ -36,7 +35,9 @@ function getSavedSortColumn() {
 }
 
 function DashboardPage() {
-  const { libraryItems, loadLibraryItems } = useLibraryItems();
+  const { libraryItems, isLoading, isError } = useLibraryItems();
+  const deleteLibraryItem = useDeleteLibraryItem();
+  const checkinLibraryItem = useCheckinLibraryItem();
   const [sortColumn, setSortColumn] = useState(getSavedSortColumn);
 
   const libraryItemsWithStatus = libraryItems.map((item) => ({
@@ -95,8 +96,7 @@ function DashboardPage() {
 
   async function handleDelete(id: string) {
     try {
-      await deleteLibraryItem(id);
-      loadLibraryItems();
+      await deleteLibraryItem.mutateAsync(id);
     } catch (error) {
       console.log("Could not delete the library item.", error);
     }
@@ -104,8 +104,7 @@ function DashboardPage() {
 
   async function handleCheckin(id: string) {
     try {
-      await checkinLibraryItem(id);
-      loadLibraryItems();
+      await checkinLibraryItem.mutateAsync(id);
     } catch (error) {
       console.log("Could not checkin the library item.", error);
     }
@@ -119,7 +118,7 @@ function DashboardPage() {
         </div>
       </div>
 
-      <CreateArticleDialog onSaved={loadLibraryItems} />
+      <CreateArticleDialog />
 
       <div className="rounded-lg border bg-card text-card-foreground">
         <Table>
@@ -139,6 +138,21 @@ function DashboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={7}>Loading library items...</TableCell>
+              </TableRow>
+            )}
+            {isError && (
+              <TableRow>
+                <TableCell colSpan={7}>Could not load library items.</TableCell>
+              </TableRow>
+            )}
+            {!isLoading && !isError && sortedLibraryItems.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7}>No library items yet.</TableCell>
+              </TableRow>
+            )}
             {sortedLibraryItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">
@@ -168,27 +182,23 @@ function DashboardPage() {
                 <TableCell>
                   <div className="flex justify-end gap-2">
                     {item.status === "Available" && (
-                      <CheckoutArticleDialog
-                        libraryItemId={item.id}
-                        onSaved={loadLibraryItems}
-                      />
+                      <CheckoutArticleDialog libraryItemId={item.id} />
                     )}
                     {item.status === "Loaned" && (
                       <Button
                         variant="outline"
                         size="sm"
+                        disabled={checkinLibraryItem.isPending}
                         onClick={() => handleCheckin(item.id)}
                       >
                         Checkin
                       </Button>
                     )}
-                    <EditArticleDialog
-                      libraryItem={item}
-                      onSaved={loadLibraryItems}
-                    />
+                    <EditArticleDialog libraryItem={item} />
                     <Button
                       variant="destructive"
                       size="sm"
+                      disabled={deleteLibraryItem.isPending}
                       onClick={() => handleDelete(item.id)}
                     >
                       <TrashIcon />

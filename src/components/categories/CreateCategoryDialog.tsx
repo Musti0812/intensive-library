@@ -1,5 +1,5 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { saveCategory } from "@/services/categoryService";
+import { useSaveCategory } from "@/hooks/useCategories";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,11 +26,9 @@ const DEFAULT_FORM_DATA: FormData = {
   name: "",
 };
 
-interface Props {
-  onSaved?: () => void;
-}
+function CreateCategoryDialog() {
+  const saveCategory = useSaveCategory();
 
-function CreateCategoryDialog({ onSaved }: Props) {
   const {
     register,
     handleSubmit,
@@ -44,9 +42,8 @@ function CreateCategoryDialog({ onSaved }: Props) {
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      await saveCategory(formData);
+      await saveCategory.mutateAsync(formData);
       reset(DEFAULT_FORM_DATA);
-      onSaved?.();
     } catch (error) {
       console.log("Could not create the category.", error);
     }
@@ -84,7 +81,7 @@ function CreateCategoryDialog({ onSaved }: Props) {
             </Field>
           </div>
           <DialogFooter showCloseButton={true} className="mt-4">
-            <Button type="submit" disabled={!isValid}>
+            <Button type="submit" disabled={!isValid || saveCategory.isPending}>
               Create
             </Button>
           </DialogFooter>

@@ -1,5 +1,5 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { saveCategory } from "@/services/categoryService";
+import { useSaveCategory } from "@/hooks/useCategories";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,6 @@ type FormData = z.infer<typeof categorySchema>;
 
 interface Props {
   category: Category;
-  onSaved?: () => void;
 }
 
 function mapToFormData(category: Category): FormData {
@@ -36,7 +35,9 @@ function mapToFormData(category: Category): FormData {
   };
 }
 
-function EditCategoryDialog({ category, onSaved }: Props) {
+function EditCategoryDialog({ category }: Props) {
+  const saveCategory = useSaveCategory();
+
   const {
     register,
     handleSubmit,
@@ -50,9 +51,8 @@ function EditCategoryDialog({ category, onSaved }: Props) {
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      await saveCategory(formData);
+      await saveCategory.mutateAsync(formData);
       reset(formData);
-      onSaved?.();
     } catch (error) {
       console.log("Could not edit the category.", error);
     }
@@ -91,7 +91,7 @@ function EditCategoryDialog({ category, onSaved }: Props) {
             </Field>
           </div>
           <DialogFooter showCloseButton={true} className="mt-4">
-            <Button type="submit" disabled={!isValid}>
+            <Button type="submit" disabled={!isValid || saveCategory.isPending}>
               Edit
             </Button>
           </DialogFooter>

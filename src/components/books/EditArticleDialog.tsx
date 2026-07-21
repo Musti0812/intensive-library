@@ -1,16 +1,12 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { getCategories } from "@/services/categoryService";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLibraryItemTypes, useSaveLibraryItem } from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import useCategories from "@/hooks/useCategories";
 import { PencilIcon } from "lucide-react";
 import { z } from "zod";
-import {
-  getLibraryItemTypes,
-  saveLibraryItem,
-} from "@/services/libraryService";
 import {
   Dialog,
   DialogContent,
@@ -20,11 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type {
-  Category,
-  LibraryItem,
-  LibraryItemType,
-} from "@/types";
+import type { LibraryItem } from "@/types";
 
 const libraryItemSchema = z.object({
   id: z.string(),
@@ -52,7 +44,6 @@ type FormData = z.infer<typeof libraryItemSchema>;
 
 interface Props {
   libraryItem: LibraryItem;
-  onSaved?: () => void;
 }
 
 function mapToFormData(libraryItem: LibraryItem): FormData {
@@ -69,11 +60,10 @@ function mapToFormData(libraryItem: LibraryItem): FormData {
   };
 }
 
-function EditArticleDialog({ libraryItem, onSaved }: Props) {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [libraryItemTypes, setLibraryItemTypes] = useState<LibraryItemType[]>(
-    [],
-  );
+function EditArticleDialog({ libraryItem }: Props) {
+  const { categories } = useCategories();
+  const { libraryItemTypes } = useLibraryItemTypes();
+  const saveLibraryItem = useSaveLibraryItem();
 
   const {
     register,
@@ -86,27 +76,10 @@ function EditArticleDialog({ libraryItem, onSaved }: Props) {
     defaultValues: mapToFormData(libraryItem),
   });
 
-  useEffect(() => {
-    async function formOptions() {
-      try {
-        const categoriesResponse = await getCategories();
-        const typesResponse = await getLibraryItemTypes();
-
-        setCategories(categoriesResponse.data);
-        setLibraryItemTypes(typesResponse.data);
-      } catch (error) {
-        console.log("Could not load categories or item types.", error);
-      }
-    }
-
-    formOptions();
-  }, []);
-
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      await saveLibraryItem(formData);
+      await saveLibraryItem.mutateAsync(formData);
       reset(formData);
-      onSaved?.();
     } catch (error) {
       console.log("Could not edit the library item.", error);
     }
@@ -249,7 +222,7 @@ function EditArticleDialog({ libraryItem, onSaved }: Props) {
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button type="submit" disabled={!isValid}>
+            <Button type="submit" disabled={!isValid || saveLibraryItem.isPending}>
               Edit
             </Button>
           </DialogFooter>

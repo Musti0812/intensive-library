@@ -1,10 +1,10 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { getCategories } from "@/services/categoryService";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLibraryItemTypes, useSaveLibraryItem } from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import useCategories from "@/hooks/useCategories";
 import { PlusIcon } from "lucide-react";
 import { z } from "zod";
 import {
@@ -16,11 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  getLibraryItemTypes,
-  saveLibraryItem,
-} from "@/services/libraryService";
-import type { Category, LibraryItemFormData, LibraryItemType } from "@/types";
+import type { LibraryItemFormData } from "@/types";
 
 const libraryItemSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
@@ -69,15 +65,10 @@ function mapToLibraryItem(formData: FormData): LibraryItemFormData {
   };
 }
 
-interface Props {
-  onSaved?: () => void;
-}
-
-function CreateArticleDialog({ onSaved }: Props) {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [libraryItemTypes, setLibraryItemTypes] = useState<LibraryItemType[]>(
-    [],
-  );
+function CreateArticleDialog() {
+  const { categories } = useCategories();
+  const { libraryItemTypes } = useLibraryItemTypes();
+  const saveLibraryItem = useSaveLibraryItem();
 
   const {
     register,
@@ -90,27 +81,10 @@ function CreateArticleDialog({ onSaved }: Props) {
     defaultValues: DEFAULT_FORM_DATA,
   });
 
-  useEffect(() => {
-    async function formOptions() {
-      try {
-        const categoriesResponse = await getCategories();
-        const typesResponse = await getLibraryItemTypes();
-
-        setCategories(categoriesResponse.data);
-        setLibraryItemTypes(typesResponse.data);
-      } catch (error) {
-        console.log("Could not load categories or item types.", error);
-      }
-    }
-
-    formOptions();
-  }, []);
-
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      await saveLibraryItem(mapToLibraryItem(formData));
+      await saveLibraryItem.mutateAsync(mapToLibraryItem(formData));
       reset(DEFAULT_FORM_DATA);
-      onSaved?.();
     } catch (error) {
       console.log("Could not create the library item.", error);
     }
@@ -257,7 +231,7 @@ function CreateArticleDialog({ onSaved }: Props) {
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button type="submit" disabled={!isValid}>
+            <Button type="submit" disabled={!isValid || saveLibraryItem.isPending}>
               Create
             </Button>
           </DialogFooter>
