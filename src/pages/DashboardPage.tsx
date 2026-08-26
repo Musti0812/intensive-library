@@ -172,7 +172,10 @@ function DashboardPage() {
                     <div>
                       <div>{item.borrower}</div>
                       <div className="text-sm text-muted-foreground">
-                        {showBorrowDate(item.borrowDate)}
+                        Checked out: {showBorrowDate(item.borrowDate)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Due: {showBorrowDate(item.dueDate)}
                       </div>
                     </div>
                   ) : (

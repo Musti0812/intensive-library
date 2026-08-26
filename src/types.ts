@@ -25,6 +25,7 @@ export type LibraryItem = {
   isBorrowable: boolean;
   borrower?: string
   borrowDate?: string
+  dueDate?: string
   author?: string
   nbrPages?: number
   runTimeMinutes?: number

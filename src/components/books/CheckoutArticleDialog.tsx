@@ -66,7 +66,7 @@ function CheckoutArticleDialog({ libraryItemId }: Props) {
           <DialogHeader>
             <DialogTitle>Checkout item</DialogTitle>
             <DialogDescription>
-              Enter the customer name for this loan.
+              Enter the customer name. The loan period is 14 days.
             </DialogDescription>
           </DialogHeader>
 
