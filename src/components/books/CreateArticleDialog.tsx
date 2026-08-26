@@ -1,7 +1,10 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLibraryItemTypes, useSaveLibraryItem } from "@/hooks/useLibraryItems";
+import {
+  useLibraryItemTypes,
+  useSaveLibraryItem,
+} from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useCategories from "@/hooks/useCategories";
@@ -74,12 +77,25 @@ function CreateArticleDialog() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(libraryItemSchema),
     mode: "onChange",
     defaultValues: DEFAULT_FORM_DATA,
   });
+
+  const selectedTypeId = watch("libraryItemTypeId");
+
+  const selectedType = libraryItemTypes.find(
+    (type) => type.id === selectedTypeId,
+  );
+
+  const shouldShowRuntime = ["Audio Book", "DVD"].includes(
+    selectedType?.name ?? "",
+  );
+
+  const isReferenceBook = selectedType?.name === "Reference Book";
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
@@ -131,11 +147,7 @@ function CreateArticleDialog() {
 
               <Field>
                 <label>Title</label>
-                <Input
-                  id="title"
-                  placeholder="Title"
-                  {...register("title")}
-                />
+                <Input id="title" placeholder="Title" {...register("title")} />
                 {errors.title && (
                   <p className="text-sm text-destructive">
                     {errors.title.message}
@@ -200,38 +212,45 @@ function CreateArticleDialog() {
                 )}
               </Field>
 
-              <Field>
-                <label htmlFor="runTimeMinutes">Runtime in Minutes</label>
-                <Input
-                  id="runTimeMinutes"
-                  type="number"
-                  min="0"
-                  placeholder="Use 0 if not audio or video"
-                  {...register("runTimeMinutes", {
-                    valueAsNumber: true,
-                  })}
-                />
-                {errors.runTimeMinutes && (
-                  <p className="text-sm text-destructive">
-                    {errors.runTimeMinutes.message}
-                  </p>
-                )}
-              </Field>
+              {shouldShowRuntime && (
+                <Field>
+                  <label htmlFor="runTimeMinutes">Runtime in Minutes</label>
+                  <Input
+                    id="runTimeMinutes"
+                    type="number"
+                    min="0"
+                    placeholder="Use 0 if not audio or video"
+                    {...register("runTimeMinutes", {
+                      valueAsNumber: true,
+                    })}
+                  />
+                  {errors.runTimeMinutes && (
+                    <p className="text-sm text-destructive">
+                      {errors.runTimeMinutes.message}
+                    </p>
+                  )}
+                </Field>
+              )}
 
-              <Field orientation="horizontal">
-                <Input
-                  id="isBorrowable"
-                  type="checkbox"
-                  className="size-4"
-                  {...register("isBorrowable")}
-                />
-                <label>Borrowable</label>
-              </Field>
+              {isReferenceBook && (
+                <Field orientation="horizontal">
+                  <Input
+                    id="isBorrowable"
+                    type="checkbox"
+                    className="size-4"
+                    {...register("isBorrowable")}
+                  />
+                  <label>Borrowable</label>
+                </Field>
+              )}
             </FieldGroup>
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button type="submit" disabled={!isValid || saveLibraryItem.isPending}>
+            <Button
+              type="submit"
+              disabled={!isValid || saveLibraryItem.isPending}
+            >
               Create
             </Button>
           </DialogFooter>
