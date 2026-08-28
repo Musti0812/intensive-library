@@ -17,18 +17,19 @@ export type LibraryItemType = {
 export type LibraryItem = {
   id: string;
   title: string;
-  acronym?: string
+  acronym?: string;
   libraryItemTypeId: string;
   libraryItemType: LibraryItemType;
   categoryId: string;
   category: Category;
   isBorrowable: boolean;
-  borrower?: string
-  borrowDate?: string
-  dueDate?: string
-  author?: string
-  nbrPages?: number
-  runTimeMinutes?: number
+  borrower?: string;
+  borrowDate?: string;
+  dueDate?: string;
+  author?: string;
+  nbrPages?: number;
+  runTimeMinutes?: number;
+  imageUrl?: string;
 };
 
 export type LibraryItemFormData = {
@@ -41,6 +42,7 @@ export type LibraryItemFormData = {
   author?: string;
   nbrPages?: number;
   runTimeMinutes?: number;
+  imageUrl?: string;
 };
 
 export type CheckoutFormData = {

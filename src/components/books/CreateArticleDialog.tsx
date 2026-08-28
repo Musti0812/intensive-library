@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { LibraryItemFormData } from "@/types";
+import cloudinary from "@/services/cloudinaryService";
 
 const libraryItemSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
@@ -40,6 +40,27 @@ const libraryItemSchema = z.object({
     .number({ error: "Runtime must be a number." })
     .min(0, { message: "Use 0 if runtime does not apply." })
     .optional(),
+  images: z
+    .instanceof(FileList)
+    .refine(
+      (fileList) => {
+        if (!fileList || fileList.length === 0) return true;
+        return ["image/png", "image/jpeg"].includes(fileList[0].type);
+      },
+      {
+        message: "Only PNG and JPG images are allowed",
+      },
+    )
+    .refine(
+      (fileList) => {
+        if (!fileList || fileList.length === 0) return true;
+        return fileList[0].size <= 5_000_000;
+      },
+      {
+        message: "Maximum file size allowed is 5 MB",
+      },
+    )
+    .optional(),
 });
 
 type FormData = z.infer<typeof libraryItemSchema>;
@@ -54,19 +75,6 @@ const DEFAULT_FORM_DATA: FormData = {
   nbrPages: 0,
   runTimeMinutes: 0,
 };
-
-function mapToLibraryItem(formData: FormData): LibraryItemFormData {
-  return {
-    title: formData.title,
-    acronym: formData.acronym,
-    libraryItemTypeId: formData.libraryItemTypeId,
-    categoryId: formData.categoryId,
-    isBorrowable: formData.isBorrowable,
-    author: formData.author,
-    nbrPages: formData.nbrPages,
-    runTimeMinutes: formData.runTimeMinutes,
-  };
-}
 
 function CreateArticleDialog() {
   const { categories } = useCategories();
@@ -97,9 +105,15 @@ function CreateArticleDialog() {
 
   const isReferenceBook = selectedType?.name === "Reference Book";
 
-  const onSubmit: SubmitHandler<FormData> = async (formData) => {
+  const onSubmit: SubmitHandler<FormData> = async ({ images, ...data }) => {
     try {
-      await saveLibraryItem.mutateAsync(mapToLibraryItem(formData));
+      let imageUrl = "";
+
+      if (images && images.length > 0) {
+        imageUrl = await cloudinary.saveImage(images[0]);
+      }
+
+      await saveLibraryItem.mutateAsync({ ...data, imageUrl });
       reset(DEFAULT_FORM_DATA);
     } catch (error) {
       console.log("Could not create the library item.", error);
@@ -243,6 +257,19 @@ function CreateArticleDialog() {
                   <label>Borrowable</label>
                 </Field>
               )}
+              <Field>
+                <label>Image</label>
+                <Input
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  {...register("images")}
+                />
+                {errors.images && (
+                  <p className="text-sm text-destructive">
+                    {errors.images.message}
+                  </p>
+                )}
+              </Field>
             </FieldGroup>
           </div>
 

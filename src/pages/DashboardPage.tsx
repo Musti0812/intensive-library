@@ -155,6 +155,17 @@ function DashboardPage() {
             )}
             {sortedLibraryItems.map((item) => (
               <TableRow key={item.id}>
+                <TableCell>
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={`${item.title} cover`}
+                      className="h-10 w-12 rounded object-cover"
+                    />
+                  ) : (
+                    "-"
+                  )}
+                </TableCell>
                 <TableCell className="font-medium">
                   {item.title}
                   {item.acronym && (
@@ -194,7 +205,7 @@ function DashboardPage() {
                         disabled={checkinLibraryItem.isPending}
                         onClick={() => handleCheckin(item.id)}
                       >
-                        Checkin
+                        Check In
                       </Button>
                     )}
                     <EditArticleDialog libraryItem={item} />
@@ -205,7 +216,6 @@ function DashboardPage() {
                       onClick={() => handleDelete(item.id)}
                     >
                       <TrashIcon />
-                      <span>Delete</span>
                     </Button>
                   </div>
                 </TableCell>

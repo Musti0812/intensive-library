@@ -1,7 +1,10 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLibraryItemTypes, useSaveLibraryItem } from "@/hooks/useLibraryItems";
+import {
+  useLibraryItemTypes,
+  useSaveLibraryItem,
+} from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useCategories from "@/hooks/useCategories";
@@ -37,6 +40,27 @@ const libraryItemSchema = z.object({
   runTimeMinutes: z
     .number({ error: "Runtime must be a number." })
     .min(0, { message: "Use 0 if runtime does not apply." })
+    .optional(),
+  images: z
+    .instanceof(FileList)
+    .refine(
+      (fileList) => {
+        if (!fileList || fileList.length === 0) return true;
+        return ["image/png", "image/jpeg"].includes(fileList[0].type);
+      },
+      {
+        message: "Only PNG and JPG images are allowed",
+      },
+    )
+    .refine(
+      (fileList) => {
+        if (!fileList || fileList.length === 0) return true;
+        return fileList[0].size <= 5_000_000;
+      },
+      {
+        message: "Maximum file size allowed is 5 MB",
+      },
+    )
     .optional(),
 });
 
@@ -89,7 +113,6 @@ function EditArticleDialog({ libraryItem }: Props) {
     <Dialog>
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
         <PencilIcon />
-        Edit
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-lg">
@@ -218,11 +241,28 @@ function EditArticleDialog({ libraryItem }: Props) {
                 />
                 <label>Borrowable</label>
               </Field>
+
+              <Field>
+                <label>{libraryItem.imageUrl ? "Change Image" : "Image"}</label>
+                <Input
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  {...register("images")}
+                />
+                {errors.images && (
+                  <p className="text-sm text-destructive">
+                    {errors.images.message}
+                  </p>
+                )}
+              </Field>
             </FieldGroup>
           </div>
 
           <DialogFooter showCloseButton={true} className="mt-5">
-            <Button type="submit" disabled={!isValid || saveLibraryItem.isPending}>
+            <Button
+              type="submit"
+              disabled={!isValid || saveLibraryItem.isPending}
+            >
               Edit
             </Button>
           </DialogFooter>
