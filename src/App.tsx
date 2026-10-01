@@ -7,7 +7,10 @@ function App() {
     <TooltipProvider>
       <div className="flex min-h-screen flex-col bg-background">
         <AppHeader />
-        <main id="main-content" className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-8 lg:px-14">
+        <main
+          id="main-content"
+          className="mx-auto w-full max-w-[1440px] flex-1 px-4 pt-12 pb-6 sm:px-8 lg:px-14"
+        >
           <Outlet />
         </main>
       </div>
