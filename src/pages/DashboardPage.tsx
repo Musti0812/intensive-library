@@ -39,17 +39,40 @@ function DashboardPage() {
   const deleteLibraryItem = useDeleteLibraryItem();
   const checkinLibraryItem = useCheckinLibraryItem();
   const [sortColumn, setSortColumn] = useState(getSavedSortColumn);
+  const [statusFilter, setStatusFilter] = useState("All items");
 
   const libraryItemsWithStatus = libraryItems.map((item) => ({
     ...item,
     status: getStatus(item.isBorrowable, item.borrower, item.borrowDate),
   }));
 
+  const filteredLibraryItems = libraryItemsWithStatus.filter((item) => {
+    if (statusFilter === "All items") return true;
+
+    return item.status === statusFilter;
+  });
+
   const sortedLibraryItems = _.orderBy(
-    libraryItemsWithStatus,
+    filteredLibraryItems,
     sortColumn.path,
     sortColumn.order,
   );
+
+  const statusFilterOptions = [
+    "All items",
+    "Available",
+    "Loaned",
+    "Not for loan",
+  ];
+
+  function getStatusCount(status: string) {
+    if (status === "All items") {
+      return libraryItemsWithStatus.length;
+    }
+
+    return libraryItemsWithStatus.filter((item) => item.status === status)
+      .length;
+  }
 
   function handleSort(path: string) {
     let newSortColumn: SortColumn;
@@ -112,13 +135,37 @@ function DashboardPage() {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-        </div>
-      </div>
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b">
+        <div className="flex max-w-full overflow-x-auto">
+          {statusFilterOptions.map((status) => (
+            <button
+              key={status}
+              type="button"
+              aria-pressed={statusFilter === status}
+              onClick={() => setStatusFilter(status)}
+              className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium ${
+                statusFilter === status
+                  ? "border-violet-600 text-violet-700"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {status === "Loaned" ? "On loan" : status}
 
-      <CreateArticleDialog />
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs ${
+                  statusFilter === status
+                    ? "bg-violet-100 text-violet-700"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {isLoading || isError ? "-" : getStatusCount(status)}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <CreateArticleDialog />
+      </div>
 
       <div className="rounded-lg border bg-card text-card-foreground">
         <Table>
@@ -140,7 +187,7 @@ function DashboardPage() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={7}>Loading library items...</TableCell>
+                <TableCell colSpan={7}>Loading library...</TableCell>
               </TableRow>
             )}
             {isError && (
@@ -150,29 +197,33 @@ function DashboardPage() {
             )}
             {!isLoading && !isError && sortedLibraryItems.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7}>No library items yet.</TableCell>
+                <TableCell colSpan={7}>
+                  No library items match this filter.
+                </TableCell>
               </TableRow>
             )}
             {sortedLibraryItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={`${item.title} cover`}
-                      className="h-10 w-12 rounded object-cover"
-                    />
-                  ) : (
-                    "-"
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {item.title}
-                  {item.acronym && (
-                    <span className="ml-2 text-muted-foreground">
-                      ({item.acronym})
-                    </span>
-                  )}
+                  <div className="flex items-center gap-3">
+                    {item.imageUrl && (
+                      <img
+                        src={item.imageUrl}
+                        alt="image"
+                        className="h-12 w-9 shrink-0 rounded object-cover"
+                      />
+                    )}
+
+                    <div>
+                      <div className="font-medium">{item.title}</div>
+
+                      {item.acronym && (
+                        <div className="text-sm text-muted-foreground">
+                          {item.acronym}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell>{item.libraryItemType.name}</TableCell>
                 <TableCell>{item.category.name}</TableCell>
