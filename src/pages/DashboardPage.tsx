@@ -321,6 +321,8 @@ function DashboardPage() {
                     <Button
                       variant="destructive"
                       size="sm"
+                      className="w-7 px-0"
+                      aria-label={`Delete ${item.title}`}
                       disabled={deleteLibraryItem.isPending}
                       onClick={() => handleDelete(item.id)}
                     >

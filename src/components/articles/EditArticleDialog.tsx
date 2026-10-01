@@ -111,7 +111,16 @@ function EditArticleDialog({ libraryItem }: Props) {
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" size="sm" />}>
+      <DialogTrigger
+        render={
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-7 px-0"
+            aria-label="Edit item"
+          />
+        }
+      >
         <PencilIcon />
       </DialogTrigger>
 
