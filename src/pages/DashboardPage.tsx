@@ -197,17 +197,23 @@ function DashboardPage() {
               <TableHead className="px-4 text-xs text-muted-foreground">
                 Title
               </TableHead>
-              <TableHead
-                className="px-4 text-xs text-muted-foreground"
-                onClick={() => handleSort("libraryItemType.name")}
-              >
-                Type {renderSortIcon("libraryItemType.name")}
+              <TableHead className="px-4 text-xs text-muted-foreground">
+                <button
+                  type="button"
+                  className="inline-flex cursor-pointer select-none items-center gap-1 transition-colors hover:text-foreground"
+                  onClick={() => handleSort("libraryItemType.name")}
+                >
+                  Type {renderSortIcon("libraryItemType.name")}
+                </button>
               </TableHead>
-              <TableHead
-                className="px-4 text-xs text-muted-foreground"
-                onClick={() => handleSort("category.name")}
-              >
-                Category {renderSortIcon("category.name")}
+              <TableHead className="px-4 text-xs text-muted-foreground">
+                <button
+                  type="button"
+                  className="inline-flex cursor-pointer select-none items-center gap-1 transition-colors hover:text-foreground"
+                  onClick={() => handleSort("category.name")}
+                >
+                  Category {renderSortIcon("category.name")}
+                </button>
               </TableHead>
               <TableHead className="px-4 text-xs text-muted-foreground">
                 Author
