@@ -1,3 +1,6 @@
+import { Input } from "@/components/ui/input";
+import { SearchIcon } from "lucide-react";
+
 interface Props {
   value: string;
   onChange: (value: string) => void;
@@ -5,14 +8,21 @@ interface Props {
 
 function SearchBox({ value, onChange }: Props) {
   return (
-    <input
-      type="search"
-      aria-label="Search titles or authors"
-      placeholder="Search titles or authors..."
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      className="h-10 w-full max-w-md rounded-lg border border-input bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
-    />
+    <div className="relative w-full max-w-md">
+      <SearchIcon
+        aria-hidden="true"
+        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+      />
+
+      <Input
+        type="search"
+        aria-label="Search titles or authors"
+        placeholder="Search titles or authors..."
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-10 bg-card pl-10"
+      />
+    </div>
   );
 }
 
