@@ -8,6 +8,7 @@ import useLibraryItems, {
 } from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { SortColumn } from "@/types";
 import { ImageIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/table";
 
 const SORT_STORAGE_KEY = "dashboardSortColumn";
+const skeletonRows = [1, 2, 3, 4, 5];
 
 const DEFAULT_SORT_COLUMN: SortColumn = {
   path: "category.name",
@@ -230,23 +232,68 @@ function DashboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={7} className="px-4">
-                  Loading library...
-                </TableCell>
-              </TableRow>
-            )}
+            {isLoading &&
+              skeletonRows.map((rowNumber) => (
+                <TableRow key={rowNumber}>
+                  <TableCell className="px-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-12 w-9 shrink-0" />
+
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4">
+                    <div className="flex justify-end gap-2">
+                      <Skeleton className="h-7 w-16" />
+                      <Skeleton className="size-7" />
+                      <Skeleton className="size-7" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
             {isError && (
               <TableRow>
-                <TableCell colSpan={7} className="px-4">
+                <TableCell
+                  colSpan={7}
+                  className="px-4 py-12 text-center text-sm text-destructive"
+                >
                   Could not load library items.
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && !isError && sortedLibraryItems.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="px-4">
+                <TableCell
+                  colSpan={7}
+                  className="px-4 py-12 text-center text-sm text-muted-foreground"
+                >
                   No library items match this filter.
                 </TableCell>
               </TableRow>
