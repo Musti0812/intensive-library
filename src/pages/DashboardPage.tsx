@@ -9,7 +9,7 @@ import useLibraryItems, {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { SortColumn } from "@/types";
-import { TrashIcon } from "lucide-react";
+import { ImageIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import _ from "lodash";
 import {
@@ -249,12 +249,16 @@ function DashboardPage() {
               <TableRow key={item.id}>
                 <TableCell className="px-4">
                   <div className="flex items-center gap-3">
-                    {item.imageUrl && (
+                    {item.imageUrl ? (
                       <img
                         src={item.imageUrl}
                         alt="image"
                         className="h-12 w-9 shrink-0 rounded object-cover"
                       />
+                    ) : (
+                      <div className="flex h-12 w-9 shrink-0 items-center justify-center rounded bg-muted text-muted-foreground">
+                        <ImageIcon className="size-4" aria-hidden="true" />
+                      </div>
                     )}
 
                     <div>
