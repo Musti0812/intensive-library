@@ -190,44 +190,64 @@ function DashboardPage() {
 
       <SearchBox value={searchQuery} onChange={setSearchQuery} />
 
-      <div className="rounded-lg border bg-card text-card-foreground">
+      <div className="overflow-hidden rounded-xl border bg-card text-card-foreground">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead onClick={() => handleSort("libraryItemType.name")}>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="px-4 text-xs text-muted-foreground">
+                Title
+              </TableHead>
+              <TableHead
+                className="px-4 text-xs text-muted-foreground"
+                onClick={() => handleSort("libraryItemType.name")}
+              >
                 Type {renderSortIcon("libraryItemType.name")}
               </TableHead>
-              <TableHead onClick={() => handleSort("category.name")}>
+              <TableHead
+                className="px-4 text-xs text-muted-foreground"
+                onClick={() => handleSort("category.name")}
+              >
                 Category {renderSortIcon("category.name")}
               </TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Borrower</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="px-4 text-xs text-muted-foreground">
+                Author
+              </TableHead>
+              <TableHead className="px-4 text-xs text-muted-foreground">
+                Status
+              </TableHead>
+              <TableHead className="px-4 text-xs text-muted-foreground">
+                Borrower
+              </TableHead>
+              <TableHead className="px-4 text-right text-xs text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={7}>Loading library...</TableCell>
+                <TableCell colSpan={7} className="px-4">
+                  Loading library...
+                </TableCell>
               </TableRow>
             )}
             {isError && (
               <TableRow>
-                <TableCell colSpan={7}>Could not load library items.</TableCell>
+                <TableCell colSpan={7} className="px-4">
+                  Could not load library items.
+                </TableCell>
               </TableRow>
             )}
             {!isLoading && !isError && sortedLibraryItems.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7}>
+                <TableCell colSpan={7} className="px-4">
                   No library items match this filter.
                 </TableCell>
               </TableRow>
             )}
             {sortedLibraryItems.map((item) => (
               <TableRow key={item.id}>
-                <TableCell>
+                <TableCell className="px-4">
                   <div className="flex items-center gap-3">
                     {item.imageUrl && (
                       <img
@@ -248,10 +268,10 @@ function DashboardPage() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{item.libraryItemType.name}</TableCell>
-                <TableCell>{item.category.name}</TableCell>
-                <TableCell>{item.author}</TableCell>
-                <TableCell>
+                <TableCell className="px-4">{item.libraryItemType.name}</TableCell>
+                <TableCell className="px-4">{item.category.name}</TableCell>
+                <TableCell className="px-4">{item.author}</TableCell>
+                <TableCell className="px-4">
                   <Badge
                     variant="secondary"
                     className={`gap-1.5 rounded-full px-2.5 py-1 ${getStatusClass(item.status)}`}
@@ -263,7 +283,7 @@ function DashboardPage() {
                     {item.status === "Loaned" ? "On loan" : item.status}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="px-4">
                   {item.borrower ? (
                     <div>
                       <div>{item.borrower}</div>
@@ -278,7 +298,7 @@ function DashboardPage() {
                     "-"
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="px-4">
                   <div className="flex justify-end gap-2">
                     {item.status === "Available" && (
                       <CheckoutArticleDialog libraryItemId={item.id} />
