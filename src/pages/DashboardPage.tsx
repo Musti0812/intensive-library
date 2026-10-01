@@ -7,6 +7,7 @@ import useLibraryItems, {
   useDeleteLibraryItem,
 } from "@/hooks/useLibraryItems";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { SortColumn } from "@/types";
 import { TrashIcon } from "lucide-react";
 import { useState } from "react";
@@ -116,6 +117,18 @@ function DashboardPage() {
     if (!isBorrowable) return "Not for loan";
 
     return "Available";
+  }
+
+  function getStatusClass(status: string) {
+    if (status === "Available") {
+      return "bg-emerald-50 text-emerald-700";
+    }
+
+    if (status === "Loaned") {
+      return "bg-violet-100 text-violet-700";
+    }
+
+    return "bg-slate-100 text-slate-600";
   }
 
   function showBorrowDate(date?: string) {
@@ -238,7 +251,18 @@ function DashboardPage() {
                 <TableCell>{item.libraryItemType.name}</TableCell>
                 <TableCell>{item.category.name}</TableCell>
                 <TableCell>{item.author}</TableCell>
-                <TableCell>{item.status}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant="secondary"
+                    className={`gap-1.5 rounded-full px-2.5 py-1 ${getStatusClass(item.status)}`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="size-1.5 rounded-full bg-current"
+                    />
+                    {item.status === "Loaned" ? "On loan" : item.status}
+                  </Badge>
+                </TableCell>
                 <TableCell>
                   {item.borrower ? (
                     <div>
