@@ -1,6 +1,6 @@
-import CheckoutArticleDialog from "@/components/books/CheckoutArticleDialog";
-import CreateArticleDialog from "@/components/books/CreateArticleDialog";
-import EditArticleDialog from "@/components/books/EditArticleDialog";
+import CheckoutArticleDialog from "@/components/articles/CheckoutArticleDialog";
+import CreateArticleDialog from "@/components/articles/CreateArticleDialog";
+import EditArticleDialog from "@/components/articles/EditArticleDialog";
 import useLibraryItems, {
   useCheckinLibraryItem,
   useDeleteLibraryItem,
