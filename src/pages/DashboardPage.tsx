@@ -1,6 +1,7 @@
 import CheckoutArticleDialog from "@/components/articles/CheckoutArticleDialog";
 import CreateArticleDialog from "@/components/articles/CreateArticleDialog";
 import EditArticleDialog from "@/components/articles/EditArticleDialog";
+import SearchBox from "@/components/common/SearchBox";
 import useLibraryItems, {
   useCheckinLibraryItem,
   useDeleteLibraryItem,
@@ -40,16 +41,23 @@ function DashboardPage() {
   const checkinLibraryItem = useCheckinLibraryItem();
   const [sortColumn, setSortColumn] = useState(getSavedSortColumn);
   const [statusFilter, setStatusFilter] = useState("All items");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const libraryItemsWithStatus = libraryItems.map((item) => ({
     ...item,
     status: getStatus(item.isBorrowable, item.borrower, item.borrowDate),
   }));
 
-  const filteredLibraryItems = libraryItemsWithStatus.filter((item) => {
-    if (statusFilter === "All items") return true;
+  const search = searchQuery.trim().toLowerCase();
 
-    return item.status === statusFilter;
+  const filteredLibraryItems = libraryItemsWithStatus.filter((item) => {
+    const matchesStatus =
+      statusFilter === "All items" || item.status === statusFilter;
+    const matchesSearch =
+      item.title.toLowerCase().includes(search) ||
+      (item.author ?? "").toLowerCase().includes(search);
+
+    return matchesStatus && matchesSearch;
   });
 
   const sortedLibraryItems = _.orderBy(
@@ -166,6 +174,8 @@ function DashboardPage() {
 
         <CreateArticleDialog />
       </div>
+
+      <SearchBox value={searchQuery} onChange={setSearchQuery} />
 
       <div className="rounded-lg border bg-card text-card-foreground">
         <Table>
