@@ -124,7 +124,7 @@ function EditArticleDialog({ libraryItem }: Props) {
         <PencilIcon />
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Edit library item</DialogTitle>
@@ -138,7 +138,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               <input type="hidden" {...register("id")} />
 
               <Field>
-                <label>Type</label>
+                <label htmlFor="libraryItemTypeId">Type</label>
                 <select
                   id="libraryItemTypeId"
                   className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -159,7 +159,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               </Field>
 
               <Field>
-                <label>Title</label>
+                <label htmlFor="title">Title</label>
                 <Input id="title" placeholder="Title" {...register("title")} />
                 {errors.title && (
                   <p className="text-sm text-destructive">
@@ -169,7 +169,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               </Field>
 
               <Field>
-                <label>Acronym</label>
+                <label htmlFor="acronym">Acronym</label>
                 <Input
                   id="acronym"
                   placeholder="Optional acronym"
@@ -178,7 +178,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               </Field>
 
               <Field>
-                <label>Category</label>
+                <label htmlFor="categoryId">Category</label>
                 <select
                   id="categoryId"
                   className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -199,7 +199,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               </Field>
 
               <Field>
-                <label>Author</label>
+                <label htmlFor="author">Author</label>
                 <Input
                   id="author"
                   placeholder="Optional author"
@@ -208,7 +208,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               </Field>
 
               <Field>
-                <label>Pages</label>
+                <label htmlFor="nbrPages">Pages</label>
                 <Input
                   id="nbrPages"
                   type="number"
@@ -225,7 +225,7 @@ function EditArticleDialog({ libraryItem }: Props) {
               </Field>
 
               <Field>
-                <label>Runtime</label>
+                <label htmlFor="runTimeMinutes">Runtime</label>
                 <Input
                   id="runTimeMinutes"
                   type="number"
@@ -248,12 +248,15 @@ function EditArticleDialog({ libraryItem }: Props) {
                   className="size-4"
                   {...register("isBorrowable")}
                 />
-                <label>Borrowable</label>
+                <label htmlFor="isBorrowable">Borrowable</label>
               </Field>
 
               <Field>
-                <label>{libraryItem.imageUrl ? "Change Image" : "Image"}</label>
+                <label htmlFor="image">
+                  {libraryItem.imageUrl ? "Change Image" : "Image"}
+                </label>
                 <Input
+                  id="image"
                   type="file"
                   accept="image/png,image/jpeg"
                   {...register("images")}

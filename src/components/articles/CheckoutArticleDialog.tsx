@@ -61,7 +61,7 @@ function CheckoutArticleDialog({ libraryItemId }: Props) {
         Checkout
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Checkout item</DialogTitle>
@@ -72,7 +72,7 @@ function CheckoutArticleDialog({ libraryItemId }: Props) {
 
           <div className="mt-4">
             <Field>
-              <label>Borrower</label>
+              <label htmlFor="borrower">Borrower</label>
               <Input
                 id="borrower"
                 placeholder="Customer name"

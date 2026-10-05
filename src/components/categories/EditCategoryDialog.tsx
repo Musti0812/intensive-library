@@ -60,12 +60,20 @@ function EditCategoryDialog({ category }: Props) {
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" size="sm" />}>
+      <DialogTrigger
+        render={
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-7 px-0"
+            aria-label={`Edit ${category.name}`}
+          />
+        }
+      >
         <PencilIcon />
-        Edit
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Edit category</DialogTitle>
@@ -74,9 +82,9 @@ function EditCategoryDialog({ category }: Props) {
             </DialogDescription>
           </DialogHeader>
 
-          <div>
+          <div className="mt-4">
             <Field>
-              <label className="mt-3">Edit Name</label>
+              <label htmlFor="categoryName">Name</label>
               <input type="hidden" {...register("id")} />
               <Input
                 id="categoryName"
@@ -90,7 +98,7 @@ function EditCategoryDialog({ category }: Props) {
               )}
             </Field>
           </div>
-          <DialogFooter showCloseButton={true} className="mt-4">
+          <DialogFooter showCloseButton={true} className="mt-5">
             <Button type="submit" disabled={!isValid || saveCategory.isPending}>
               Edit
             </Button>

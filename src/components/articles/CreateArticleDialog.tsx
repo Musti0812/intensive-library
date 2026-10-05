@@ -127,7 +127,7 @@ function CreateArticleDialog() {
         Create Item
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Create library item</DialogTitle>
@@ -160,7 +160,7 @@ function CreateArticleDialog() {
               </Field>
 
               <Field>
-                <label>Title</label>
+                <label htmlFor="title">Title</label>
                 <Input id="title" placeholder="Title" {...register("title")} />
                 {errors.title && (
                   <p className="text-sm text-destructive">
@@ -170,7 +170,7 @@ function CreateArticleDialog() {
               </Field>
 
               <Field>
-                <label>Acronym</label>
+                <label htmlFor="acronym">Acronym</label>
                 <Input
                   id="acronym"
                   placeholder="Optional acronym"
@@ -179,7 +179,7 @@ function CreateArticleDialog() {
               </Field>
 
               <Field>
-                <label>Category</label>
+                <label htmlFor="categoryId">Category</label>
                 <select
                   id="categoryId"
                   className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -200,7 +200,7 @@ function CreateArticleDialog() {
               </Field>
 
               <Field>
-                <label>Author</label>
+                <label htmlFor="author">Author</label>
                 <Input
                   id="author"
                   placeholder="Optional author"
@@ -209,7 +209,7 @@ function CreateArticleDialog() {
               </Field>
 
               <Field>
-                <label>Pages</label>
+                <label htmlFor="nbrPages">Pages</label>
                 <Input
                   id="nbrPages"
                   type="number"
@@ -254,12 +254,13 @@ function CreateArticleDialog() {
                     className="size-4"
                     {...register("isBorrowable")}
                   />
-                  <label>Borrowable</label>
+                  <label htmlFor="isBorrowable">Borrowable</label>
                 </Field>
               )}
               <Field>
-                <label>Image</label>
+                <label htmlFor="image">Image</label>
                 <Input
+                  id="image"
                   type="file"
                   accept="image/png,image/jpeg"
                   {...register("images")}

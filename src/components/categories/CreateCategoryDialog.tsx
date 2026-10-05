@@ -56,7 +56,7 @@ function CreateCategoryDialog() {
         Create Category
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Create category</DialogTitle>
@@ -65,9 +65,9 @@ function CreateCategoryDialog() {
             </DialogDescription>
           </DialogHeader>
 
-          <div>
+          <div className="mt-4">
             <Field>
-              <label className="mt-3">Name</label>
+              <label htmlFor="categoryName">Name</label>
               <Input
                 id="categoryName"
                 placeholder="Category name"
@@ -80,7 +80,7 @@ function CreateCategoryDialog() {
               )}
             </Field>
           </div>
-          <DialogFooter showCloseButton={true} className="mt-4">
+          <DialogFooter showCloseButton={true} className="mt-5">
             <Button type="submit" disabled={!isValid || saveCategory.isPending}>
               Create
             </Button>
