@@ -9,7 +9,7 @@ function App() {
         <AppHeader />
         <main
           id="main-content"
-          className="mx-auto w-full max-w-[1440px] flex-1 px-4 pt-12 pb-6 sm:px-8 lg:px-14"
+          className="mx-auto w-full max-w-[1440px] flex-1 px-4 pt-4 pb-6 sm:px-8 lg:px-14"
         >
           <Outlet />
         </main>

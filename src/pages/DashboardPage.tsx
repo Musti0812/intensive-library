@@ -9,8 +9,15 @@ import useLibraryItems, {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import type { SortColumn } from "@/types";
-import { ImageIcon, TrashIcon } from "lucide-react";
+import { ClockIcon, ImageIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import _ from "lodash";
 import {
@@ -23,6 +30,7 @@ import {
 } from "@/components/ui/table";
 
 const SORT_STORAGE_KEY = "dashboardSortColumn";
+const ITEMS_PER_PAGE = 9;
 const skeletonRows = [1, 2, 3, 4, 5];
 
 const DEFAULT_SORT_COLUMN: SortColumn = {
@@ -45,6 +53,7 @@ function DashboardPage() {
   const [sortColumn, setSortColumn] = useState(getSavedSortColumn);
   const [statusFilter, setStatusFilter] = useState("All items");
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   const libraryItemsWithStatus = libraryItems.map((item) => ({
     ...item,
@@ -67,6 +76,17 @@ function DashboardPage() {
     filteredLibraryItems,
     sortColumn.path,
     sortColumn.order,
+  );
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedLibraryItems.length / ITEMS_PER_PAGE),
+  );
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedLibraryItems = sortedLibraryItems.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
   );
 
   const statusFilterOptions = [
@@ -98,6 +118,7 @@ function DashboardPage() {
     }
 
     setSortColumn(newSortColumn);
+    setPage(1);
     sessionStorage.setItem(SORT_STORAGE_KEY, JSON.stringify(newSortColumn));
   }
 
@@ -140,6 +161,33 @@ function DashboardPage() {
     return dateObject.toLocaleDateString();
   }
 
+  function isOverdue(date?: string) {
+    if (!date) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return new Date(date) < today;
+  }
+
+  function getDueText(date?: string) {
+    if (!date) return "No due date";
+
+    const dueDate = new Date(date);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    if (dueDate.getTime() === today.getTime()) return "Due today";
+
+    if (dueDate < today) {
+      return `Overdue since ${dueDate.toLocaleDateString()}`;
+    }
+
+    return `Due ${dueDate.toLocaleDateString()}`;
+  }
+
   async function handleDelete(id: string) {
     try {
       await deleteLibraryItem.mutateAsync(id);
@@ -165,7 +213,10 @@ function DashboardPage() {
               key={status}
               type="button"
               aria-pressed={statusFilter === status}
-              onClick={() => setStatusFilter(status)}
+              onClick={() => {
+                setStatusFilter(status);
+                setPage(1);
+              }}
               className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium ${
                 statusFilter === status
                   ? "border-violet-600 text-violet-700"
@@ -187,10 +238,18 @@ function DashboardPage() {
           ))}
         </div>
 
-        <CreateArticleDialog />
       </div>
 
-      <SearchBox value={searchQuery} onChange={setSearchQuery} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <SearchBox
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setPage(1);
+          }}
+        />
+        <CreateArticleDialog />
+      </div>
 
       <div className="overflow-hidden rounded-xl border bg-card text-card-foreground">
         <Table>
@@ -298,7 +357,7 @@ function DashboardPage() {
                 </TableCell>
               </TableRow>
             )}
-            {sortedLibraryItems.map((item) => (
+            {paginatedLibraryItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="px-4">
                   <div className="flex items-center gap-3">
@@ -325,7 +384,9 @@ function DashboardPage() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="px-4">{item.libraryItemType.name}</TableCell>
+                <TableCell className="px-4">
+                  {item.libraryItemType.name}
+                </TableCell>
                 <TableCell className="px-4">{item.category.name}</TableCell>
                 <TableCell className="px-4">{item.author}</TableCell>
                 <TableCell className="px-4">
@@ -342,13 +403,23 @@ function DashboardPage() {
                 </TableCell>
                 <TableCell className="px-4">
                   {item.borrower ? (
-                    <div>
-                      <div>{item.borrower}</div>
-                      <div className="text-sm text-muted-foreground">
-                        Checked out: {showBorrowDate(item.borrowDate)}
+                    <div className="space-y-1">
+                      <div
+                        className="text-sm font-medium"
+                        title={`Checked out: ${showBorrowDate(item.borrowDate)}`}
+                      >
+                        {item.borrower}
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        Due: {showBorrowDate(item.dueDate)}
+
+                      <div
+                        className={`flex items-center gap-1.5 text-xs ${
+                          isOverdue(item.dueDate)
+                            ? "text-red-600"
+                            : "text-amber-600"
+                        }`}
+                      >
+                        <ClockIcon className="size-3.5" aria-hidden="true" />
+                        <span>{getDueText(item.dueDate)}</span>
                       </div>
                     </div>
                   ) : (
@@ -388,6 +459,52 @@ function DashboardPage() {
           </TableBody>
         </Table>
       </div>
+
+      {!isLoading && !isError && sortedLibraryItems.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            Showing {startIndex + 1}–{startIndex + paginatedLibraryItems.length}{" "}
+            of
+            {sortedLibraryItems.length} items
+          </p>
+          <Pagination
+            aria-label="Collection pagination"
+            className="mx-0 w-auto"
+          >
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  aria-disabled={currentPage === 1}
+                  tabIndex={currentPage === 1 ? -1 : undefined}
+                  className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    if (currentPage > 1) setPage(currentPage - 1);
+                  }}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="px-3 text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  aria-disabled={currentPage === totalPages}
+                  tabIndex={currentPage === totalPages ? -1 : undefined}
+                  className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    if (currentPage < totalPages) setPage(currentPage + 1);
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </section>
   );
 }
