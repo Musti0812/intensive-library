@@ -11,6 +11,7 @@ type Props = {
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number) => void;
+  itemName?: string;
 };
 
 function ListPagination({
@@ -18,6 +19,7 @@ function ListPagination({
   pageSize,
   totalCount,
   onPageChange,
+  itemName = "items",
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const firstItem = (currentPage - 1) * pageSize + 1;
@@ -26,9 +28,9 @@ function ListPagination({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-muted-foreground" aria-live="polite">
-        Showing {firstItem}–{lastItem} of {totalCount} items
+        Showing {firstItem}–{lastItem} of {totalCount} {itemName}
       </p>
-      <Pagination aria-label="Collection pagination" className="mx-0 w-auto">
+      <Pagination aria-label="Pagination" className="mx-0 w-auto">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious

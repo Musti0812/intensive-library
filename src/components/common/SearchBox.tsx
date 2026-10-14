@@ -4,9 +4,14 @@ import { SearchIcon } from "lucide-react";
 interface Props {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
 }
 
-function SearchBox({ value, onChange }: Props) {
+function SearchBox({
+  value,
+  onChange,
+  placeholder = "Search titles or authors...",
+}: Props) {
   return (
     <div className="relative w-full max-w-md">
       <SearchIcon
@@ -16,8 +21,8 @@ function SearchBox({ value, onChange }: Props) {
 
       <Input
         type="search"
-        aria-label="Search titles or authors"
-        placeholder="Search titles or authors..."
+        aria-label={placeholder}
+        placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className="h-10 bg-card pl-10"
