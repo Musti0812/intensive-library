@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,6 +86,7 @@ function mapToFormData(libraryItem: LibraryItem): FormData {
 }
 
 function EditArticleDialog({ libraryItem }: Props) {
+  const [open, setOpen] = useState(false);
   const { categories } = useCategories();
   const { libraryItemTypes } = useLibraryItemTypes();
   const saveLibraryItem = useSaveLibraryItem();
@@ -104,13 +106,14 @@ function EditArticleDialog({ libraryItem }: Props) {
     try {
       await saveLibraryItem.mutateAsync(formData);
       reset(formData);
+      setOpen(false);
     } catch (error) {
       console.log("Could not edit the library item.", error);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
           <Button

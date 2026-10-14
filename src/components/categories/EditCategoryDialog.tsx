@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useSaveCategory } from "@/hooks/useCategories";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +37,7 @@ function mapToFormData(category: Category): FormData {
 }
 
 function EditCategoryDialog({ category }: Props) {
+  const [open, setOpen] = useState(false);
   const saveCategory = useSaveCategory();
 
   const {
@@ -53,13 +55,14 @@ function EditCategoryDialog({ category }: Props) {
     try {
       await saveCategory.mutateAsync(formData);
       reset(formData);
+      setOpen(false);
     } catch (error) {
       console.log("Could not edit the category.", error);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
           <Button

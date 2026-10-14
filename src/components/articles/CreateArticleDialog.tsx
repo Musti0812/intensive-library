@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,6 +78,7 @@ const DEFAULT_FORM_DATA: FormData = {
 };
 
 function CreateArticleDialog() {
+  const [open, setOpen] = useState(false);
   const { categories } = useCategories();
   const { libraryItemTypes } = useLibraryItemTypes();
   const saveLibraryItem = useSaveLibraryItem();
@@ -115,13 +117,14 @@ function CreateArticleDialog() {
 
       await saveLibraryItem.mutateAsync({ ...data, imageUrl });
       reset(DEFAULT_FORM_DATA);
+      setOpen(false);
     } catch (error) {
       console.log("Could not create the library item.", error);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button />}>
         <PlusIcon />
         Create Item

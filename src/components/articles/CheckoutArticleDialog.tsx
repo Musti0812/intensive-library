@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useCheckoutLibraryItem } from "@/hooks/useLibraryItems";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +31,7 @@ interface Props {
 }
 
 function CheckoutArticleDialog({ libraryItemId }: Props) {
+  const [open, setOpen] = useState(false);
   const checkoutLibraryItem = useCheckoutLibraryItem();
 
   const {
@@ -50,13 +52,14 @@ function CheckoutArticleDialog({ libraryItemId }: Props) {
         checkout: formData,
       });
       reset(DEFAULT_FORM_DATA);
+      setOpen(false);
     } catch (error) {
       console.log("Could not checkout the library item.", error);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
         Checkout
       </DialogTrigger>

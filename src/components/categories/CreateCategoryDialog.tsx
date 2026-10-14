@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useSaveCategory } from "@/hooks/useCategories";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +28,7 @@ const DEFAULT_FORM_DATA: FormData = {
 };
 
 function CreateCategoryDialog() {
+  const [open, setOpen] = useState(false);
   const saveCategory = useSaveCategory();
 
   const {
@@ -44,13 +46,14 @@ function CreateCategoryDialog() {
     try {
       await saveCategory.mutateAsync(formData);
       reset(DEFAULT_FORM_DATA);
+      setOpen(false);
     } catch (error) {
       console.log("Could not create the category.", error);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button />}>
         <PlusIcon />
         Create Category
