@@ -53,3 +53,7 @@ export type SortColumn = {
   path: string;
   order: "asc" | "desc";
 };
+
+export type LibraryItemWithStatus = LibraryItem & {
+  status: string;
+};
