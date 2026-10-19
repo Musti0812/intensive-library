@@ -2,7 +2,7 @@
 
 A library management app where staff can manage books and other items, organise them into categories, and track who has borrowed what.
 
-**🔗 Live demo:** [your-link-here](https://your-link-here)
+**🔗 Live demo:** [Intensive Library]([https://intensive-library-4rod.onrender.com/])
 
 ![Dashboard screenshot](docs/dashboard.png)
 
