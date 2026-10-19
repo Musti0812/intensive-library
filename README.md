@@ -34,4 +34,4 @@ React · TypeScript · Vite · Tailwind CSS · shadcn/ui · TanStack Query · Re
 
 ## About me
 
-Moustafa Akl – Junior Software Developer that tries my best to better my skills and always am down to learn new things 
+Moustafa Akl – Junior Full-Stack Developer, always eager to learn and improve my skills.
