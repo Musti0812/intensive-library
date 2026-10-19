@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { LibraryItem } from "@/types";
+import cloudinary from "@/services/cloudinaryService";
 
 const libraryItemSchema = z.object({
   id: z.string(),
@@ -102,10 +103,16 @@ function EditArticleDialog({ libraryItem }: Props) {
     defaultValues: mapToFormData(libraryItem),
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (formData) => {
+  const onSubmit: SubmitHandler<FormData> = async ({ images, ...data }) => {
     try {
-      await saveLibraryItem.mutateAsync(formData);
-      reset(formData);
+      let imageUrl = libraryItem.imageUrl ?? "";
+
+      if (images && images.length > 0) {
+        imageUrl = await cloudinary.saveImage(images[0]);
+      }
+
+      await saveLibraryItem.mutateAsync({ ...data, imageUrl });
+      reset(data);
       setOpen(false);
     } catch (error) {
       console.log("Could not edit the library item.", error);
