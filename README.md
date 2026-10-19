@@ -1,73 +1,37 @@
-# React + TypeScript + Vite
+# Intensive Library
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A library management app where staff can manage books and other items, organise them into categories, and track who has borrowed what.
 
-Currently, two official plugins are available:
+**🔗 Live demo:** [your-link-here](https://your-link-here)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![Dashboard screenshot](docs/dashboard.png)
 
-## React Compiler
+## What it does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Add, edit and delete library items, with cover image upload
+- Lend items to borrowers and check them back in
+- See each item's status: *Available*, *On loan* or *Not for loan*
+- Search, filter by status, sort by any column, and page through results
+- Manage categories and see how many items each one has
 
-## Expanding the ESLint configuration
+## Built with
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+React · TypeScript · Vite · Tailwind CSS · shadcn/ui · TanStack Query · React Hook Form · Zod · React Router · Axios · Cloudinary
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Technical highlights
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Server state with TanStack Query** – data is cached and refreshed automatically after changes, with loading skeletons while it loads.
+- **Type-safe forms** – React Hook Form with Zod validation, sharing TypeScript types with the API layer.
+- **Clean structure** – API calls in `services/`, data logic in custom hooks, UI in small reusable components.
+- **Separated logic and display** – an item's status is worked out once, then mapped separately to its label and colour, so text and styling can change without breaking the logic.
+- **Responsive layout** – collapsible sidebar that works on mobile.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## What I learned
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Building a UI with shadcn/ui** – I learned how to use and customise shadcn components such as the table, dialogs and sidebar, instead of building everything from scratch. This let me spend more time on the features themselves.
+- **Loading states** – I used skeleton rows that match the shape of the real table, so the page feels faster and doesn't jump around while data loads.
+- **Image uploads** – I learned how to upload an image from the browser straight to Cloudinary, get back the image URL, save it with the library item, and show the cover in the table.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## About me
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Moustafa Akl – Junior Software Developer that tries my best to better my skills and always am down to learn new things 
